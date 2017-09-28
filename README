@@ -1,1 +1,10 @@
-My solutions to programming exercises for Stanford's machine learning class taught by Andrew Ng.
+Solutions to programming exercises for Stanford's machine learning class taught by Andrew Ng.
+Forked from @merwan: https://github.com/merwan/ml-class/
+
+Initial repo contains both initial code for exercises and solutions. I'm tying to do exercises by myself, adding new Octave files - saving @merwan's code in case I'll need a reference in future.
+
+I'm using VS Code, running Octave CLI from Code terminal. For example:
+    
+    C:\Octave\Octave-4.2.1\octave.vbs --no-gui --eval gradientDescent_01 --persist
+
+Assuming that current working folder in terminal contains file `gradientDescent_01.m`
