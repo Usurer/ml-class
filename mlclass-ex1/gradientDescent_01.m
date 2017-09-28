@@ -14,53 +14,24 @@ function J = costFunction(X, y, theta, m)
   
 end
 
-function delta = getDelta(X, y, theta, m, j)
+function dJ = costFunctionDerivative(X, y, theta, m)
 
   h = theta * X';
-  delta = sum((h' - y)' * X(:,j)) / m;
+  dJ = sum((h' - y) .* X) / m;
 
 end
 
-function theta_j = getThetaJ(X, y, theta, m, j, alpha)
-  delta = getDelta(X, y, theta, m, j);
-  theta_j = theta(j) - alpha * delta;
-end
-
-# I want to do the same but for all thetas in one function, using matrix
-
-# At first I'll get vector of dJ/dTheta, i.e. cost function derivatives
-# My fist version (see getDelta) didn't use matrix properly and index of X was required
-function deltas = getDeltas(X, y, theta, m)
-
-  h = theta * X';
-  deltas = sum((h' - y) .* X) / m;
-
-end
-
-function thetas = getThetas(X, y, theta, m, alpha)
-  delta = getDeltas(X, y, theta, m);
+function thetas = getNewThetaValues(X, y, theta, m, alpha)
+  delta = costFunctionDerivative(X, y, theta, m);
   thetas = theta - alpha * delta;
 end
 
-function theta = getThetas2(X, y, theta, m, alpha)
+function theta = calculateTheta(X, y, theta, m, alpha)
   for i = 1:1500
-    theta = getThetas(X, y, theta, m, alpha);        
-    #costFunction(X, y, theta_new, m);
+    theta = getNewThetaValues(X, y, theta, m, alpha);            
   end
 end
 
-
-# End new matrix thetas calculation
-
-function theta = getTheta(X, y, theta, m, alpha)
-  for i = 1:1500
-    theta_1 = getThetaJ(X, y, theta, m, 1, alpha);
-    theta_2 = getThetaJ(X, y, theta, m, 2, alpha);
-    theta(1) = theta_1;
-    theta(2) = theta_2;
-    costFunction(X, y, theta, m);
-  end
-end
 
 data = load('ex1data1.txt');
 m = length(data);
@@ -78,8 +49,7 @@ costFunction(X, y, theta_init, m);
 alpha = 0.01;
 theta = theta_init;
 
-theta = getTheta(X, y, theta_init, m, alpha)
-thetas = getThetas2(X, y, theta_init, m, alpha)
+theta = calculateTheta(X, y, theta_init, m, alpha)
 %plot(x1, y, 'rx', x1, theta(1) + theta(2)*x1);
 %plot(x1, theta(1) + theta(2)*x1);
 
