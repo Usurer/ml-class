@@ -26,8 +26,16 @@ function thetas = getNewThetaValues(X, y, theta, m, alpha)
   thetas = theta - alpha * delta;
 end
 
+function J_history = costFunctionRate(X, y, theta, m, alpha, numberOfIterations)
+  J_history = zeros(1, numberOfIterations);
+  for i = 1:numberOfIterations      
+    J_history(i) = costFunction(X, y, theta, m);     
+    theta = getNewThetaValues(X, y, theta, m, alpha);       
+  end
+end
+
 function theta = calculateTheta(X, y, theta, m, alpha)
-  for i = 1:15
+  for i = 1:1500  
     theta = getNewThetaValues(X, y, theta, m, alpha);            
   end
 end
@@ -50,40 +58,60 @@ m = length(y);
 fprintf('First 10 examples from the dataset: \n');
 fprintf(' x = [%.0f %.0f], y = %.0f \n', [X(1:10,:) y(1:10,:)]');
 
-fprintf('Program paused. Press enter to continue.\n');
-pause;
-
 % Scale features and set them to zero mean
 fprintf('Normalizing Features ...\n');
 
-[X mu sigma] = featureNormalize(X)
-
-fprintf('Normalizing done \n');
+[X mu sigma] = featureNormalize(X);
 
 ######################################
 
-x1 = data(:,1);
-y = data(:,2);
-
 x0 = ones(m, 1);
-theta_init = zeros(1,6);
+X = [x0, X ];
 
-X = [x0, x1, x1 .^ 2 / 10000, x1 .^ 3 / 10000, x1 .^ 4 / 10000, x1 .^ 5 / 10000 ];
+theta_init = zeros(1, columns(X));
 
+fprintf('Calculating Cost Function... \n');
 costFunction(X, y, theta_init, m);
 
 alpha = 0.01;
 theta = theta_init;
 
+fprintf('Calculating theta... \n');
 theta = calculateTheta(X, y, theta_init, m, alpha)
-plot(x1, y, 'rx', x1, theta * X', '-b');
-#plot(x1, theta(1) + theta(2)*x1);
+fprintf('Done \n');
 
-fprintf('Theta found by MY gradient descent: ');
-fprintf('%f %f \n', theta(1), theta(2));
+figure;
+plot(data(:, 1), y, 'rx', data(:, 1), X*theta', 'bx');
+xlabel('Square ft');
+ylabel('Price');
 
-% Predict values for population sizes of 35,000 and 70,000
-predict1 = theta(1) + 3.5*theta(2)
-fprintf('For population = 35,000, we predict a profit of %f\n', predict1*10000);
-predict2 = theta(1) + 7*theta(2)
-fprintf('For population = 70,000, we predict a profit of %f\n', predict2*10000);
+# Let's predict the price of a 1650 sq-ft, 3 br house
+# X1 = 1650, X2 = 3
+# At first I have to normalize these values, since theta was calculated 
+# for normalized vals.
+# X = (X .- mu) ./ sigma;
+
+X = [1650, 3];
+X = (X .- mu) ./ sigma;
+X = [1, X];
+
+fprintf('Predicted price is %f \n', X * theta');
+
+hold on;
+plot(1650, X * theta', 'k*');
+
+# Now I wanna plot cost function changes for different learning rates
+numberOfIterations = 50;
+scale = 10^10;
+
+figure;
+plot(1:numberOfIterations, costFunctionRate(X, y, theta_init, m, 0.3, numberOfIterations) / scale);
+xlabel('Number of iterations');
+ylabel('Cost J (scaled)');
+hold on;
+plot(1:numberOfIterations, costFunctionRate(X, y, theta_init, m, 0.1, numberOfIterations) / scale);
+hold on;
+plot(1:numberOfIterations, costFunctionRate(X, y, theta_init, m, 0.03, numberOfIterations) / scale);
+hold on;
+plot(1:numberOfIterations, costFunctionRate(X, y, theta_init, m, 0.01, numberOfIterations) / scale);
+legend ("alpha = 0.3", "alpha = 0.1", "alpha = 0.03", "alpha = 0.01");
