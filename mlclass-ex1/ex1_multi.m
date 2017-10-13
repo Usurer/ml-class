@@ -49,7 +49,9 @@ pause;
 % Scale features and set them to zero mean
 fprintf('Normalizing Features ...\n');
 
-[X mu sigma] = featureNormalize(X);
+[X mu sigma] = featureNormalize(X)
+
+fprintf('Normalizing done \n');
 
 % Add intercept term to X
 X = [ones(m, 1) X];
@@ -83,7 +85,7 @@ fprintf('Running gradient descent ...\n');
 
 % Choose some alpha value
 alpha = 0.3;
-num_iters = 100;
+num_iters = 10;
 
 % Init Theta and Run Gradient Descent 
 theta = zeros(3, 1);
@@ -91,7 +93,7 @@ theta = zeros(3, 1);
 
 % Plot the convergence graph
 figure;
-plot(1:numel(J_history), J_history, '-b', 'LineWidth', 2);
+plot(1:numel(J_history), J_history/(10^10), '-b', 'LineWidth', 2);
 xlabel('Number of iterations');
 ylabel('Cost J');
 
